@@ -12,6 +12,7 @@ import logging
 from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
+import os
 
 # ----------------------------------------------------------------------------#
 # App Config.
@@ -114,7 +115,7 @@ def venues():
             "num_upcoming_shows": 0,
         }]
     }]
-    return render_template('pages/venues.html', areas=data);
+    return render_template('pages/venues.html', areas=data)
 
 
 @app.route('/venues/search', methods=['POST'])
@@ -537,12 +538,12 @@ if not app.debug:
 # ----------------------------------------------------------------------------#
 
 # Default port:
+'''
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug=True)
+'''
 
 # Or specify port manually:
-'''
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 8000))
     app.run(host='0.0.0.0', port=port)
-'''
