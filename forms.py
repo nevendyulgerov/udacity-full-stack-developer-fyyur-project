@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask_wtf import Form
-from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField
+from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, URL, Length
 
 states = [
@@ -96,31 +96,48 @@ class ShowForm(Form):
 
 class VenueForm(Form):
     name = StringField(
-        'name', validators=[DataRequired()]
+        'name',
+        validators=[DataRequired()]
     )
     city = StringField(
-        'city', validators=[DataRequired()]
+        'city',
+        validators=[DataRequired()]
     )
     state = SelectField(
-        'state', validators=[DataRequired()],
+        'state',
+        validators=[DataRequired()],
         choices=states
     )
     address = StringField(
-        'address', validators=[DataRequired()]
+        'address',
+        validators=[DataRequired()]
     )
     phone = StringField(
         'phone'
     )
     image_link = StringField(
         'image_link',
-        validators=[DataRequired(), URL(), Length(300)]
+        validators=[DataRequired(), URL(), Length(max=300)]
     )
     genres = SelectMultipleField(
-        'genres', validators=[DataRequired()],
+        'genres',
+        validators=[DataRequired()],
         choices=genres
     )
     facebook_link = StringField(
-        'facebook_link', validators=[URL()]
+        'facebook_link',
+        validators=[URL()]
+    )
+    website = StringField(
+        'website',
+        validators=[URL(), Length(max=120)]
+    )
+    seeking_talent = BooleanField(
+        'seeking_talent'
+    )
+    seeking_description = TextAreaField(
+        'seeking_description',
+        validators=[Length(max=500)]
     )
 
 
@@ -140,7 +157,7 @@ class ArtistForm(Form):
     )
     image_link = StringField(
         'image_link',
-        validators=[DataRequired(), URL(), Length(300)]
+        validators=[DataRequired(), URL(), Length(max=300)]
     )
     genres = SelectMultipleField(
         'genres', validators=[DataRequired()],
