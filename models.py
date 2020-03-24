@@ -45,6 +45,51 @@ class Venue(db.Model):
     def __repr__(self):
         return f'<Venue Name: {self.name}>'
 
+    def get_base_details(self):
+        return {
+            'id': self.id,
+            'name': self.name
+        }
+
+    def get_short_details(self, current_time):
+        upcoming_shows = self.shows.filter(Show.start_time > current_time).all()
+
+        return {
+            'id': self.id,
+            'name': self.name,
+            'num_upcoming_shows': len(upcoming_shows)
+        }
+
+    def get_full_details(self, current_time):
+        upcoming_shows = self.shows.filter(Show.start_time > current_time).all()
+        past_shows = self.shows.filter(Show.start_time < current_time).all()
+
+        return {
+            'id': self.id,
+            'name': self.name,
+            'city': self.city,
+            'state': self.state,
+            'address': self.address,
+            'phone': self.phone,
+            'image_link': self.image_link,
+            'genres': self.genres,
+            'facebook_link': self.facebook_link,
+            'website': self.website,
+            'seeking_talent': self.seeking_talent,
+            'seeking_description': self.seeking_description,
+            'past_shows': past_shows,
+            'upcoming_shows': upcoming_shows,
+            'past_shows_count': len(past_shows),
+            'upcoming_shows_count': len(upcoming_shows)
+        }
+
+    def generate_area(self, city, state):
+        return {
+            'city': city,
+            'state': state,
+            'venues': [self]
+        }
+
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
