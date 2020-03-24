@@ -209,3 +209,7 @@ h2.monospace {
 .subtitle {
   opacity: 0.5;
 }
+
+.mt-1 {
+  margin-top: 1rem;
+}
