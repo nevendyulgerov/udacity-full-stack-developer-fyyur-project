@@ -22,8 +22,28 @@ class Venue(db.Model):
     address = db.Column(db.String(120))
     phone = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
+    genres = db.Column(db.ARRAY(db.String), nullable=False)
     facebook_link = db.Column(db.String(120))
+    website = db.Column(db.String(120))
+    seeking_talent = db.Column(db.Boolean, default=False)
+    seeking_description = db.Column(db.String(), default='')
     shows = db.relationship('Show', backref='venue', lazy=True)
+
+    def __init__(self, name, city, state, address, phone, image_link, genres, facebook_link, website, seeking_talent=False, seeking_description=''):
+        self.name = name
+        self.city = city
+        self.state = state
+        self.address = address
+        self.phone = phone
+        self.image_link = image_link
+        self.genres = genres
+        self.facebook_link = facebook_link
+        self.website = website
+        self.seeking_talent = seeking_talent
+        self.seeking_description = seeking_description
+
+    def __repr__(self):
+        return f'<Venue Name: {self.name} City: {self.city} State: {self.state} Address: {self.address} Phone: {self.phone} ImageLink: {self.image_link} Genres: {self.genres} FacebookLink: {self.facebook_link} Website: {self.website} SeekingTalent: {self.seeking_talent} SeekingDescription: {self.seeking_description}'
 
 
 class Artist(db.Model):
@@ -34,10 +54,28 @@ class Artist(db.Model):
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     phone = db.Column(db.String(120))
-    genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
+    genres = db.Column(db.ARRAY(db.String), nullable=False)
     facebook_link = db.Column(db.String(120))
+    website = db.Column(db.String(120))
+    seeking_venue = db.Column(db.Boolean(), default=False)
+    seeking_description = db.Column(db.String(), default='')
     shows = db.relationship('Show', backref='artist', lazy=True)
+
+    def __init__(self, name, city, state, phone, image_link, genres, facebook_link, website, seeking_venue=False, seeking_description=''):
+        self.name = name
+        self.city = city
+        self.state = state
+        self.phone = phone
+        self.image_link = image_link
+        self.genres = genres
+        self.facebook_link = facebook_link
+        self.website = website
+        self.seeking_venue = seeking_venue
+        self.seeking_description = seeking_description
+
+    def __repr__(self):
+        return f'<Artist Name: {self.name} City: {self.city} State: {self.state} Address: {self.address} Phone: {self.phone} ImageLink: {self.image_link} Genres: {self.genres} FacebookLink: {self.facebook_link} Website: {self.website} SeekingTalent: {self.seeking_talent} SeekingDescription: {self.seeking_description}'
 
 
 class Show(db.Model):
