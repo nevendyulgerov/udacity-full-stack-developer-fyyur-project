@@ -139,7 +139,8 @@ class ArtistForm(Form):
         'phone', validators=[DataRequired()]
     )
     image_link = StringField(
-        'image_link'
+        'image_link',
+        validators=[DataRequired(), URL(), Length(300)]
     )
     genres = SelectMultipleField(
         'genres', validators=[DataRequired()],
