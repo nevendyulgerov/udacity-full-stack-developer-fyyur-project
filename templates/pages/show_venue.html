@@ -41,6 +41,10 @@
 			<i class="fas fa-moon"></i> Not currently seeking talent
 		</p>
 		{% endif %}
+
+        <button class="btn btn-danger btn-delete-venue mt-1" data-id="{{ venue.id }}">
+            Delete venue
+        </button>
 	</div>
 	<div class="col-sm-6">
 		<img src="{{ venue.image_link }}" alt="Venue Image" />
@@ -74,6 +78,17 @@
 		{% endfor %}
 	</div>
 </section>
+
+<script>
+    document.querySelector('.btn-delete-venue').addEventListener('click', (event) => {
+        const venueId = event.target.dataset.id;
+        const request = { method: 'DELETE' };
+
+        return fetch(`/venues/${venueId}`, request).then(() => {
+            return location.href = '/';
+        })
+    })
+</script>
 
 {% endblock %}
 
