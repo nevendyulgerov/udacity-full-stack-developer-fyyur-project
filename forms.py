@@ -1,7 +1,8 @@
 from datetime import datetime
 from flask_wtf import Form
 from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField, BooleanField, TextAreaField
-from wtforms.validators import DataRequired, URL, Length
+from wtforms.validators import DataRequired, URL, Length, ValidationError
+import re
 
 states = [
     ('AL', 'AL'),
@@ -80,6 +81,18 @@ genres = [
 ]
 
 
+def validate_phone(form, field):
+    if not re.search(r"^[0-9]{3}-[0-9]{3}-[0-9]{4}$", field.data):
+        raise ValidationError('Invalid phone number')
+
+
+def validate_genres(form, field):
+    genres_values = [genre[1] for genre in genres]
+    for value in field.data:
+        if value not in genres_values:
+            raise ValidationError('Invalid genre')
+
+
 class ShowForm(Form):
     artist_id = StringField(
         'artist_id'
@@ -113,7 +126,8 @@ class VenueForm(Form):
         validators=[DataRequired()]
     )
     phone = StringField(
-        'phone'
+        'phone',
+        validators=[DataRequired(), validate_phone]
     )
     image_link = StringField(
         'image_link',
@@ -121,7 +135,7 @@ class VenueForm(Form):
     )
     genres = SelectMultipleField(
         'genres',
-        validators=[DataRequired()],
+        [DataRequired(), validate_genres],
         choices=genres
     )
     facebook_link = StringField(
@@ -143,26 +157,43 @@ class VenueForm(Form):
 
 class ArtistForm(Form):
     name = StringField(
-        'name', validators=[DataRequired()]
+        'name',
+        validators=[DataRequired()]
     )
     city = StringField(
-        'city', validators=[DataRequired()]
+        'city',
+        validators=[DataRequired()]
     )
     state = SelectField(
-        'state', validators=[DataRequired()],
+        'state',
+        validators=[DataRequired()],
         choices=states
     )
     phone = StringField(
-        'phone', validators=[DataRequired()]
+        'phone',
+        validators=[DataRequired(), validate_phone]
     )
     image_link = StringField(
         'image_link',
         validators=[DataRequired(), URL(), Length(max=300)]
     )
     genres = SelectMultipleField(
-        'genres', validators=[DataRequired()],
+        'genres',
+        [DataRequired(), validate_genres],
         choices=genres
     )
     facebook_link = StringField(
-        'facebook_link', validators=[DataRequired(), URL()]
+        'facebook_link',
+        validators=[DataRequired(), URL()]
+    )
+    website = StringField(
+        'website',
+        validators=[URL(), Length(max=120)]
+    )
+    seeking_venue = BooleanField(
+        'seeking_venue'
+    )
+    seeking_description = TextAreaField(
+        'seeking_description',
+        validators=[Length(max=500)]
     )
