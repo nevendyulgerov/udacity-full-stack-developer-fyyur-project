@@ -1,7 +1,9 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_wtf import CsrfProtect
 
 db = SQLAlchemy()
+csrf = CsrfProtect()
 
 
 def setup_db(app):
@@ -9,6 +11,7 @@ def setup_db(app):
     db.app = app
     db.init_app(app)
     Migrate(app, db)
+    csrf.init_app(app)
     return db
 
 
@@ -64,6 +67,7 @@ class Venue(db.Model):
         upcoming_shows = self.shows.filter(Show.start_time > current_time).all()
         past_shows = self.shows.filter(Show.start_time < current_time).all()
 
+        # TODO: Evaluate solution for past/upcoming shows fields
         return {
             'id': self.id,
             'name': self.name,
@@ -89,6 +93,36 @@ class Venue(db.Model):
             'state': state,
             'venues': [self]
         }
+
+    @staticmethod
+    def find_area_index_by_location(areas, city, state):
+        target_area_index = -1
+
+        for area_index in range(len(areas)):
+            area = areas[area_index]
+
+            if area['city'] == city and area['state'] == state:
+                target_area_index = area_index
+                break
+
+        return target_area_index
+
+    @staticmethod
+    def get_areas_venues(venues_results, current_time):
+        areas = []
+
+        for venue in venues_results:
+            target_area_index = Venue.find_area_index_by_location(areas, venue.city, venue.state)
+            is_new_area = target_area_index == -1
+            short_detailed_venue = Venue.get_short_details(venue, current_time)
+
+            if is_new_area:
+                venue_area = Venue.generate_area(short_detailed_venue, venue.city, venue.state)
+                areas.append(venue_area)
+            else:
+                areas[target_area_index]['venues'].append(short_detailed_venue)
+
+        return areas
 
 
 class Artist(db.Model):
@@ -121,6 +155,44 @@ class Artist(db.Model):
 
     def __repr__(self):
         return f'<Artist Name: {self.name}>'
+
+    def get_base_details(self):
+        return {
+            'id': self.id,
+            'name': self.name
+        }
+
+    def get_short_details(self, current_time):
+        upcoming_shows = self.shows.filter(Show.start_time > current_time).all()
+
+        return {
+            'id': self.id,
+            'name': self.name,
+            'num_upcoming_shows': len(upcoming_shows)
+        }
+
+    def get_full_details(self, current_time):
+        # upcoming_shows = self.shows.filter(Show.start_time > current_time).all()
+        # past_shows = self.shows.filter(Show.start_time < current_time).all()
+
+        # TODO: Add past/upcoming shows fields
+        return {
+            'id': self.id,
+            'name': self.name,
+            'city': self.city,
+            'state': self.state,
+            'phone': self.phone,
+            'image_link': self.image_link,
+            'genres': self.genres,
+            'facebook_link': self.facebook_link,
+            'website': self.website,
+            'seeking_venue': self.seeking_venue,
+            'seeking_description': self.seeking_description,
+            'past_shows': [],
+            'upcoming_shows': [],
+            'past_shows_count': 0,
+            'upcoming_shows_count': 0
+        }
 
 
 class Show(db.Model):
