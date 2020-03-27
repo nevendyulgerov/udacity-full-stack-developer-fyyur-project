@@ -63,11 +63,7 @@ class Venue(db.Model):
             'num_upcoming_shows': len(upcoming_shows)
         }
 
-    def get_full_details(self, current_time):
-        upcoming_shows = self.shows.filter(Show.start_time > current_time).all()
-        past_shows = self.shows.filter(Show.start_time < current_time).all()
-
-        # TODO: Evaluate solution for past/upcoming shows fields
+    def get_full_details(self):
         return {
             'id': self.id,
             'name': self.name,
@@ -80,11 +76,7 @@ class Venue(db.Model):
             'facebook_link': self.facebook_link,
             'website': self.website,
             'seeking_talent': self.seeking_talent,
-            'seeking_description': self.seeking_description,
-            'past_shows': past_shows,
-            'upcoming_shows': upcoming_shows,
-            'past_shows_count': len(past_shows),
-            'upcoming_shows_count': len(upcoming_shows)
+            'seeking_description': self.seeking_description
         }
 
     def generate_area(self, city, state):
@@ -117,7 +109,7 @@ class Venue(db.Model):
             short_detailed_venue = Venue.get_short_details(venue, current_time)
 
             if is_new_area:
-                venue_area = Venue.generate_area(short_detailed_venue, venue.city, venue.state)
+                venue_area = Venue.generate_area(venue, venue.city, venue.state)
                 areas.append(venue_area)
             else:
                 areas[target_area_index]['venues'].append(short_detailed_venue)
@@ -139,7 +131,7 @@ class Artist(db.Model):
     website = db.Column(db.String(120))
     seeking_venue = db.Column(db.Boolean(), default=False)
     seeking_description = db.Column(db.String(), default='')
-    shows = db.relationship('Show', backref='artist', lazy=True)
+    shows = db.relationship('Show', backref='artist', lazy='dynamic')
 
     def __init__(self, name, city, state, phone, image_link, genres, facebook_link, website, seeking_venue=False, seeking_description=''):
         self.name = name
@@ -171,11 +163,7 @@ class Artist(db.Model):
             'num_upcoming_shows': len(upcoming_shows)
         }
 
-    def get_full_details(self, current_time):
-        # upcoming_shows = self.shows.filter(Show.start_time > current_time).all()
-        # past_shows = self.shows.filter(Show.start_time < current_time).all()
-
-        # TODO: Add past/upcoming shows fields
+    def get_full_details(self):
         return {
             'id': self.id,
             'name': self.name,
@@ -187,11 +175,7 @@ class Artist(db.Model):
             'facebook_link': self.facebook_link,
             'website': self.website,
             'seeking_venue': self.seeking_venue,
-            'seeking_description': self.seeking_description,
-            'past_shows': [],
-            'upcoming_shows': [],
-            'past_shows_count': 0,
-            'upcoming_shows_count': 0
+            'seeking_description': self.seeking_description
         }
 
 
