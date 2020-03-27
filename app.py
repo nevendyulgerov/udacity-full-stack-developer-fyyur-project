@@ -55,7 +55,7 @@ def index():
 #  Venues
 #  ----------------------------------------------------------------
 
-@app.route('/venues', methods=['GET', 'POST'])
+@app.route('/venues')
 def venues():
     venues_results = Venue.query.group_by(Venue.id, Venue.state, Venue.city).all()
     areas = Venue.get_areas_venues(venues_results, get_current_time())
@@ -94,7 +94,24 @@ def show_venue(venue_id):
 
     try:
         venue = Venue.query.get(venue_id)
-        body = Venue.get_full_details(venue, current_time)
+        upcoming_shows = venue.shows.filter(Show.start_time > current_time).all()
+        past_shows = venue.shows.filter(Show.start_time < current_time).all()
+        upcoming_shows_data = []
+        past_shows_data = []
+
+        for show in upcoming_shows:
+            artist_details = Show.get_artist_details(show, format_datetime)
+            upcoming_shows_data.append(artist_details)
+
+        for show in past_shows:
+            artist_details = Show.get_artist_details(show, format_datetime)
+            past_shows_data.append(artist_details)
+
+        body = Venue.get_full_details(venue)
+        body['past_shows'] = past_shows_data
+        body['upcoming_shows'] = upcoming_shows_data
+        body['past_shows_count'] = len(past_shows)
+        body['upcoming_shows_count'] = len(upcoming_shows)
     except:
         error = True
         print(sys.exc_info())
@@ -225,12 +242,31 @@ def search_artists():
 
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
+    current_time = get_current_time()
     error = False
     body = {}
 
     try:
         artist = Artist.query.get(artist_id)
-        body = Artist.get_full_details(artist, get_current_time())
+        upcoming_shows = artist.shows.filter(Show.start_time > current_time).all()
+        past_shows = artist.shows.filter(Show.start_time < current_time).all()
+        upcoming_shows_data = []
+        past_shows_data = []
+
+        for show in upcoming_shows:
+            venue_details = Show.get_venue_details(show, format_datetime)
+            upcoming_shows_data.append(venue_details)
+
+        for show in past_shows:
+            venue_details = Show.get_venue_details(show, format_datetime)
+            past_shows_data.append(venue_details)
+
+        body = Artist.get_full_details(artist)
+        body['past_shows'] = past_shows_data
+        body['upcoming_shows'] = upcoming_shows_data
+        body['past_shows_count'] = len(past_shows)
+        body['upcoming_shows_count'] = len(upcoming_shows)
+
     except:
         error = True
         print(sys.exc_info())
