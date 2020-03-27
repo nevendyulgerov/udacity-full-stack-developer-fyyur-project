@@ -12,3 +12,5 @@ DEBUG = True
 SQLALCHEMY_DATABASE_URI = 'postgresql://dbuser:dbuser@localhost:5432/fyyur'
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+WTF_CSRF_ENABLED = False
