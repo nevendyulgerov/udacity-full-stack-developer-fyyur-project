@@ -133,6 +133,13 @@ To start and run the local development server,
   $ pip install -r requirements.txt
   ```
 
+3. Create the database:
+  ```
+  $ createdb fyyur
+  ```
+
+  By default the db user has username "dbuser" and password "dbuser"
+
 3. Run the development server:
   ```
   $ export FLASK_APP=myapp
