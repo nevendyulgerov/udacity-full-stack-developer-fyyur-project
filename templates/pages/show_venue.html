@@ -42,9 +42,11 @@
 		</p>
 		{% endif %}
 
-        <button class="btn btn-danger btn-delete-venue mt-1" data-id="{{ venue.id }}">
-            Delete venue
-        </button>
+        <p class="mt-1">
+            <button class="btn btn-danger btn-delete-venue" data-id="{{ venue.id }}">
+                Delete venue
+            </button>
+        </p>
 	</div>
 	<div class="col-sm-6">
 		<img src="{{ venue.image_link }}" alt="Venue Image" />
